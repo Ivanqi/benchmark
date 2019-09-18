@@ -3,13 +3,14 @@ namespace BenchMark;
 
 use BenchMark\Service\PcntlBenchmark;
 use BenchMark\Service\WebSocketClient;
+use BenchMark\Service\OptCheck;
 
 class Sync 
 {
     protected $opt = []; 
     public function __construct($opt)
     {
-        $this->optCheck($opt);
+        OptCheck::check($opt);
         $this->opt = $opt;
     }
 
@@ -338,23 +339,6 @@ class Sync
             $pb->max_read_time = $read_use;
         }
         return true;
-    }
-
-    private function optCheck($opt)
-    {
-        // 并发数量
-        if(!isset($opt['c'])) {
-            exit("require -c [process_num]. ep: -c 100\n");
-        }
-        if(!isset($opt['n'])) {
-            exit("require -n [request_num]. ep: -n 10000\n");
-        }
-        if(!isset($opt['s'])) {
-            exit("require -s [server_url]. ep: -s tcp://127.0.0.1:9999\n");
-        }
-        if(!isset($opt['f'])) {
-            exit("require -f [test_function]. ep: -f short_tcp\n");
-        }
     }
 
     private function createSendData()
