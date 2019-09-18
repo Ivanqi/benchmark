@@ -1,0 +1,11 @@
+{
+    "name": "ivan/BenchMark",
+    "require": {
+        "php": ">=7"
+    },
+    "autoload": {
+        "psr-4": {
+            "BenchMark\\": "src"
+        }
+    }
+}
