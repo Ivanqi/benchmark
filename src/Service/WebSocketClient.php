@@ -1,4 +1,5 @@
 <?php
+namespace BenchMark\Service;
 class WebSocketClient
 {
     const VERSION = '0.1.4';
