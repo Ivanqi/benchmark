@@ -7,7 +7,9 @@ use BenchMark\Service\OptCheck;
 
 class Sync 
 {
-    protected $opt = []; 
+    protected $opt = [];
+    private $sendData = '';
+
     public function __construct($opt)
     {
         OptCheck::check($opt);
@@ -21,7 +23,7 @@ class Sync
         $pb->request_num = (int) $this->opt['n'];
         $pb->server_url = trim($this->opt['s']);
         $pb->server_config = parse_url($pb->server_url);
-        $pb->send_data = $this->createSendData();
+        $pb->send_data = $this->sendData;
         $pb->read_len = 65536;
         if (!empty($this->opt['p'])) {
             $pb->show_detail = true;
@@ -341,14 +343,15 @@ class Sync
         return true;
     }
 
-    private function createSendData()
+    public function createSendData($sendData)
     {
-        $sendData = "GET / HTTP/1.1\r\n";
-        $sendData .= "Host: www.baidu.com\r\n";
-        $sendData .= "Connection: keep-alive\r\n";
-        $sendData .= "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n";
-        $sendData .= "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36\r\n\r\n";
-        return $sendData;
+        $this->sendData = $sendData;
+        // $sendData = "GET / HTTP/1.1\r\n";
+        // $sendData .= "Host: www.baidu.com\r\n";
+        // $sendData .= "Connection: keep-alive\r\n";
+        // $sendData .= "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n";
+        // $sendData .= "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36\r\n\r\n";
+        // return $sendData;
     }
 
     public function getSocketRefusalMsg($msg)
