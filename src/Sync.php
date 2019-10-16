@@ -38,7 +38,7 @@ class Sync
     // short_tcp
     public function short_tcp(PcntlBenchmark $pb) 
     {
-        $fp = new \swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+        $fp = new \swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC, 1);
         if (!$fp->connect($pb->server_config['host'], $pb->server_config['port'], 1)) {
             error:
             echo "Error: " . socket_strerror($fp->errCode). "[{$fp->errCode}]";
@@ -162,8 +162,7 @@ class Sync
         }
         $end = microtime(true);
         $read_use = $end - $start;
-        if ($read_use > $pb->max_read_time)
-        {
+        if ($read_use > $pb->max_read_time) {
             $pb->max_read_time = $read_use;
         }
         return true;
