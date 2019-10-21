@@ -111,8 +111,7 @@ class PcntlBenchmark
         }
 
         $this->pid = posix_getpid();
-
-        for ($i = 0; $i < $this->process_num; $i++) {
+        for ($i = 0; $i < $this->process_req_num; $i++) {
             $func = $this->test_func;
             if (method_exists($this->class_name, $this->test_func)) {
                 if (call_user_func([$this->class_name, $this->test_func], $this)) {

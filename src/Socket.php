@@ -65,10 +65,12 @@ class Socket {
             $start = $end;
         });
         $i++;
-        if (!$ret) {
+        if ($ret <= 0) {
             echo $pb->pid, "#$i@", " is lost \n";
             echo "发送数据失败\n";
             return false;
+        } else {
+            $msg = $fp->recv(1024);
         }
 
         $end = microtime(true);

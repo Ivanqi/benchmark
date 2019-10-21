@@ -12,7 +12,8 @@ class StreamClient
     public $writeBuffer = 8192;
     private $url;
     private $clientStream;
-    private static $maxConnectSeconds = 2;
+    private static $timeout = 2;
+    private $chunkSize = 8192;
     
     public function connect($url)
     {
@@ -41,6 +42,10 @@ class StreamClient
         // stream_set_write_buffer 设置流写文件缓冲区
         @stream_set_write_buffer($clientStream, $this->writeBuffer);
 
+        if (!stream_set_timeout($clientStream, self::$timeout)) {
+            return false;
+        }
+
         if (in_array($schema, ['tcp', 'unix'])) {
             // 用客户端字节流创建socket
             $socket = @socket_import_stream($clientStream);
@@ -57,25 +62,61 @@ class StreamClient
         return $this;
     }
 
+
     public function send($request, $callback1 = false, $callback2 = false) 
     {
+        if (empty($request)) {
+            return false;
+        }
         if (!$callback1) {
             $callback1();
         }
-        // stream_socket_sendto 向Socket发送数据，不管其连接与否
-        @stream_socket_sendto($this->clientStream, $request);
-        if (!$callback2) {
+
+        if ($callback2) {
             $callback2();
         }
-        $start = time();
-        while (true) {
-            // stream_socket_recvfrom 从连接或未连接的套接字接收数据
-            $data = @stream_socket_recvfrom($this->clientStream, 1024 * 8);
-            if (empty($data) or substr($data, -1, 1) == "\n") {
+        // stream_socket_sendto 向Socket发送数据，不管其连接与否
+        @stream_socket_sendto($this->clientStream, $request);
+        return true;
+    }
+
+    public function recv($length)
+    {
+        $result = '';
+        $info = stream_get_meta_data($this->clientStream);
+        $hardTimeLimit = time() + self::$timeout + 2;
+
+        while (!$info['timed_out'] && !feof($this->clientStream)) {
+            $tmp = stream_socket_recvfrom($this->clientStream, $length);
+
+            if ($pos = strpos($tmp, "\r\n\r\n")) {
+                $result .= substr($tmp, 0, $pos);
                 break;
+            } else {
+                $result .= $tmp;
+                if (mb_strlen($result, 'ASCII') === $length) {
+                    break;
+                }
+            }
+            $info = stream_get_meta_data($this->clientStream);
+            if (time() >= $hardTimeLimit) {
+                throw new \Exception('Timeout while reading from Server');
             }
         }
-        fclose($this->clientStream);
-        return $data;
+
+        if ($info['timed_out']) {
+            throw new \Exception('Timeout while reading data from socket');
+        }
+        return $result;
     }
+
+    public function close()
+    {
+        return fclose($this->clientStream);
+    }
+
+    public function __destruct() {
+        $this->close();
+    }
+
 }

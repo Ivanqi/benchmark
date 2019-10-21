@@ -47,5 +47,5 @@ $req = json_encode($req) . PKG_EOF;
 
 $opt = getopt("c:n:s:f:p:l:");
 $socket = new BenchMark\Socket($opt);
-// $socket->setSentData($req );
+$socket->setSentData($req);
 $socket->run();
