@@ -88,7 +88,6 @@ class StreamClient
 
         while (!$info['timed_out'] && !feof($this->clientStream)) {
             $tmp = stream_socket_recvfrom($this->clientStream, $length);
-
             if ($pos = strpos($tmp, "\r\n\r\n")) {
                 $result .= substr($tmp, 0, $pos);
                 break;

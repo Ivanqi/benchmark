@@ -21,6 +21,7 @@ class PcntlBenchmark
     public $max_write_time = 0;
     public $max_read_time = 0;
     public $max_conn_time = 0;
+    public $fp = NULL;
 
     public $pid;
 

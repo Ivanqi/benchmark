@@ -13,7 +13,6 @@ function getSign($data, $time) {
     return md5($str);
 }
 
-
 $data = [
     ['name' => 'ivan', 'age' => 26, 'height' => '62kg', 'high' => '167cm'],
     ['name' => 'siki', 'age' => 21, 'height' => '40kg', 'high' => '155cm'],

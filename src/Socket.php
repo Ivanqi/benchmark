@@ -72,7 +72,6 @@ class Socket {
         } else {
             $msg = $fp->recv(1024);
         }
-
         $end = microtime(true);
         $read_use = $end - $start;
         if ($read_use > $pb->max_read_time) {
