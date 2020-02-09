@@ -246,16 +246,19 @@ class FakeGameDataGenerator
         $gameTablesById = array_flip(self::$gameTables[$gameId]);
         $time = time();
         for($i = 0; $i < $maxDataTimes; $i++) {
-            $tmp_records = [];
             foreach(self::$tableInfo as $tableName => $fieldSet) {
-                if (!isset($tableName, $gameTablesById)) {
+                if (!isset($gameTablesById[$tableName])) {
                     continue;
                 }
-                foreach ($fieldSet as $arr) {
-                    $tmp_records[$arr['field']] = call_user_func([__NAMESPACE__ . '\\' . __CLASS__ , $arr['func']]);
+                if (!isset($records[$tableName])) {
+                    $records[$tableName] = [];
                 }
+                $tmp = [];
+                foreach ($fieldSet as $arr) {
+                    $tmp[$arr['field']] = call_user_func([__NAMESPACE__ . '\\' . __CLASS__ , $arr['func']]);
+                }
+                array_push($records[$tableName], $tmp);
             }
-            array_push($records, $tmp_records);
         }
         if (empty($records)) {
             echo "生成的数据为空";
@@ -280,10 +283,9 @@ class FakeGameDataGenerator
         return md5($str);
     }
 }
-
 $req = [
     'cmd'  => 'receive',
-    'data' => FakeGameDataGenerator::returnGameData(),
+    'data' => FakeGameDataGenerator::returnGameData(50),
     'ext' => [],
 ];
 $req = json_encode($req) . PKG_EOF;
