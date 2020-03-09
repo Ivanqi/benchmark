@@ -271,13 +271,12 @@ class FakeGameDataGenerator
         ];
         $data['sign'] = self::getSign($data, $time);
         $data['time'] = $time;
-
-        return $data;
+        return gzcompress(serialize($data));
     }
     private static function getSign($data, $time) {
         $str = KEY . '#' . $time;
         foreach($data as $k => $v) {
-            $v = is_array($v) ? json_encode($v) : $v;
+            $v = is_array($v) ? serialize($v) : $v;
             $str .= '#' . $k . '|' . $v;
         }
         return md5($str);
@@ -288,7 +287,7 @@ $req = [
     'data' => FakeGameDataGenerator::returnGameData(50),
     'ext' => [],
 ];
-$req = json_encode($req) . PKG_EOF;
+$req = serialize($req) . PKG_EOF;
 
 $opt = getopt("c:n:s:f:p:l:");
 $socket = new BenchMark\Socket($opt);
